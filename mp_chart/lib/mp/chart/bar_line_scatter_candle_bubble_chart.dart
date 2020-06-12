@@ -144,16 +144,6 @@ class BarLineScatterCandleBubbleState<T extends BarLineScatterCandleBubbleChart>
     var dx = details.localPoint.dx - _curX;
     var dy = details.localPoint.dy - _curY;
 
-    if (widget.controller.painter.highlightPerDragEnabled) {
-      final highlighted = widget.controller.painter.getHighlightByTouchPoint(
-          details.localPoint.dx, details.localPoint.dy);
-      if (highlighted?.equalTo(lastHighlighted) == false) {
-        lastHighlighted = HighlightUtils.performHighlight(
-            widget.controller.painter, highlighted, lastHighlighted);
-        needStateIfNotDispose = true;
-      }
-    }
-
     if (widget.controller.painter.dragYEnabled &&
         widget.controller.painter.dragXEnabled) {
       if (_inverted()) {
@@ -334,6 +324,18 @@ class BarLineScatterCandleBubbleState<T extends BarLineScatterCandleBubbleChart>
   }
 
   void onDragStart(LongPressStartDetails details) {
+    var needStateIfNotDispose = false;
+
+    if (widget.controller.painter.highlightPerDragEnabled) {
+      final highlighted = widget.controller.painter.getHighlightByTouchPoint(
+          details.localPosition.dx, details.localPosition.dy);
+      if (highlighted?.equalTo(lastHighlighted) == false) {
+        lastHighlighted = HighlightUtils.performHighlight(
+            widget.controller.painter, highlighted, lastHighlighted);
+        needStateIfNotDispose = true;
+      }
+    }
+
     if (widget.controller.touchEventListener != null) {
       var point = _getTouchValue(
           widget.controller.touchEventListener.valueType(),
@@ -343,9 +345,25 @@ class BarLineScatterCandleBubbleState<T extends BarLineScatterCandleBubbleChart>
           details.localPosition.dy);
       widget.controller.touchEventListener.onDragStart(point.x, point.y);
     }
+
+    if (needStateIfNotDispose) {
+      setStateIfNotDispose();
+    }
   }
 
   void onDragUpdate(LongPressMoveUpdateDetails details) {
+    var needStateIfNotDispose = false;
+
+    if (widget.controller.painter.highlightPerDragEnabled) {
+      final highlighted = widget.controller.painter.getHighlightByTouchPoint(
+          details.localPosition.dx, details.localPosition.dy);
+      if (highlighted?.equalTo(lastHighlighted) == false) {
+        lastHighlighted = HighlightUtils.performHighlight(
+            widget.controller.painter, highlighted, lastHighlighted);
+        needStateIfNotDispose = true;
+      }
+    }
+
     if (widget.controller.touchEventListener != null) {
       var point = _getTouchValue(
           widget.controller.touchEventListener.valueType(),
@@ -354,6 +372,10 @@ class BarLineScatterCandleBubbleState<T extends BarLineScatterCandleBubbleChart>
           details.localPosition.dx,
           details.localPosition.dy);
       widget.controller.touchEventListener.onDragUpdate(point.x, point.y);
+    }
+
+    if (needStateIfNotDispose) {
+      setStateIfNotDispose();
     }
   }
 
