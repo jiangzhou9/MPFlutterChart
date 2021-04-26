@@ -46,11 +46,9 @@ abstract class ChartState<T extends Chart> extends State<T> {
 
     String fileName = DateTime.now().toIso8601String();
     String path = '$directory/$fileName.png';
-    _screenshotController.capture(path: path, pixelRatio: 3.0).then((imgFile) {
-      ImageGallerySaver.saveImage(Uint8List.fromList(imgFile.readAsBytesSync()))
-          .then((value) {
-        imgFile.delete();
-      });
+    _screenshotController.capture(path: path, pixelRatio: 3.0).then((imgFile) async {
+      await ImageGallerySaver.saveImage(Uint8List.fromList(imgFile.readAsBytesSync()));
+      imgFile.delete();
       isCapturing = false;
     }).catchError((error) {
       isCapturing = false;
